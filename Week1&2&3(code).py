@@ -172,6 +172,45 @@ print("R²:", r2_score(y_test, y_pred_lr))
 print("Random Forest Performance:")
 print("MSE:", mean_squared_error(y_test, y_pred_rf))
 print("R²:", r2_score(y_test, y_pred_rf))
+"""=============WEEK-3========"""
+# Predict Water Footprint
+y_pred = rf.predict(X_scaled)
 
+df1["Predicted_Footprint"] = y_pred
+print(df1[["Household", "Water_Footprint", "Predicted_Footprint"]].head())
+top_households = df1.nlargest(3, "Predicted_Footprint")[["Household", "Predicted_Footprint"]]
+print("High Footprint Households:")
+print(top_households)
+activity_cols = ["Bathing(L)", "Cooking(L)", "Washing(L)", "Gardening(L)", "Drinking(L)"]
+
+df1["Max_Activity"] = df1[activity_cols].idxmax(axis=1)
+print(df1[["Household", "Max_Activity"]].head())
+def recommend(row):
+    if row["Max_Activity"] == "Bathing(L)":
+        return "Reduce shower time or use low-flow showerheads."
+    elif row["Max_Activity"] == "Cooking(L)":
+        return "Use water-efficient cooking methods."
+    elif row["Max_Activity"] == "Washing(L)":
+        return "Run washing machine with full loads only."
+    elif row["Max_Activity"] == "Gardening(L)":
+        return "Adopt drip irrigation / reuse household water for gardening."
+    elif row["Max_Activity"] == "Drinking(L)":
+        return "Check for leaks / encourage mindful drinking."
+    else:
+        return "Maintain current usage."
+    
+df1["Recommendation"] = df1.apply(recommend, axis=1)
+print(df1[["Household", "Max_Activity", "Recommendation"]].head())
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Actual vs Predicted
+plt.figure(figsize=(10,6))
+sns.barplot(x="Household", y="Water_Footprint", data=df1, color="blue", label="Actual")
+sns.barplot(x="Household", y="Predicted_Footprint", data=df1, color="red", alpha=0.5, label="Predicted")
+plt.xticks(rotation=45)
+plt.title("Actual vs Predicted Water Footprint per Household")
+plt.legend()
+plt.show()
     
 
