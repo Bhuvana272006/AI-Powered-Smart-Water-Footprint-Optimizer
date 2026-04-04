@@ -26,7 +26,8 @@ drinking = st.number_input("Drinking (L)")
 
 # Predict
 if st.button("Predict"):
-    input_data = scaler.transform([[bathing, cooking, washing, gardening, drinking]])
+    total_usage = bathing + cooking + washing + gardening + drinking
+    input_data = scaler.transform([[bathing, cooking, washing, gardening, drinking, total_usage]])
     prediction = model.predict(input_data)
 
     st.success(f"Predicted Water Footprint: {prediction[0]:.2f}")
